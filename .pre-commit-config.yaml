@@ -1,0 +1,37 @@
+default_install_hook_types: [pre-commit, commit-msg]
+default_stages: [pre-commit]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b # v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: no-commit-to-branch
+        args:
+          - --pattern
+          - '^(?!(feat|fix|chore|docs|test|refactor|ci|build|perf|style|revert)/[a-z0-9]+(-[a-z0-9]+)*$).+'
+
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: 4394e2e7ab54549ad3f61cd32ae044710f885d12 # v4.0.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+
+  - repo: local
+    hooks:
+      - id: backend-lint
+        name: Backend lint
+        entry: uv run --project backend --locked ruff check
+        language: system
+        files: ^backend/.*\.py$
+        types: [python]
+
+      - id: frontend-lint
+        name: Frontend lint
+        entry: npm --prefix frontend run lint
+        language: system
+        files: ^frontend/
+        pass_filenames: false
