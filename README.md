@@ -196,7 +196,9 @@ The OCR engine, LLM provider, and Celery result backend are not selected.
 ## Contributing and development approach
 
 [GitHub Actions](./.github/workflows/ci.yml) runs backend Ruff/pytest and
-frontend lint/tests on pushes and pull requests. A change-detection job enables
+frontend lint/tests on pull requests targeting `main` (including subsequent
+pushes to those PRs) and pushes to `main`. Feature-branch pushes without a PR
+do not trigger CI. A change-detection job enables
 each service job only when its folder changes; changes to the CI workflow
 enable both. Pull requests compare against their base, and pushes compare
 against the previous pushed revision. Jobs use read-only permissions, including
