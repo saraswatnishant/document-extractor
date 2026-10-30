@@ -1,0 +1,25 @@
+name: PR title check
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  pr-title-check:
+    name: PR title check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.17"
+          python-version: "3.13"
+      - name: Check repository files
+        run: |
+          uvx --from pre-commit==4.2.0 pre-commit run trailing-whitespace --all-files
+          uvx --from pre-commit==4.2.0 pre-commit run end-of-file-fixer --all-files
+          uvx --from pre-commit==4.2.0 pre-commit run check-yaml --all-files
+          uvx --from pre-commit==4.2.0 pre-commit run check-merge-conflict --all-files
