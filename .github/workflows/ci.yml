@@ -1,4 +1,4 @@
-name: Lint and test
+name: CI
 
 on:
   pull_request:
@@ -9,8 +9,13 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   changes:
+    name: Detect changes
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -34,6 +39,7 @@ jobs:
               - '.github/workflows/ci.yml'
 
   backend:
+    name: Backend lint and test
     needs: changes
     if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
@@ -52,6 +58,7 @@ jobs:
       - run: uv run --locked pytest
 
   frontend:
+    name: Frontend lint, test and build
     needs: changes
     if: needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
@@ -67,3 +74,14 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
+      - run: npm run build
+
+  checks-passed:
+    name: CI passed
+    needs: [changes, backend, frontend]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required job results
+        run: |
+          test "${{ needs.changes.result == 'success' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}" = "true"
