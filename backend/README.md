@@ -39,7 +39,9 @@ From this directory:
 make lint
 ```
 
-Runs `uv run --locked ruff check .` with Ruff's default rules.
+Runs `uv run --locked ruff check .` with Ruff's default rules plus import sorting.
+The source root is explicitly configured so local hooks and CI classify
+application imports consistently.
 Reports issues without modifying files. Formatting and type checking are
 not configured yet.
 

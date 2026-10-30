@@ -11,6 +11,12 @@ dependencies = [
 testpaths = ["tests"]
 pythonpath = ["."]
 
+[tool.ruff]
+src = ["."]
+
+[tool.ruff.lint]
+extend-select = ["I"]
+
 [dependency-groups]
 dev = [
     "httpx2>=2.16.0",
